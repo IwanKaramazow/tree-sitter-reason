@@ -1,0 +1,35 @@
+{
+  "name": "reason",
+  "rules": {
+    "program": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "upper_ident"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "lower_ident"
+        }
+      ]
+    },
+    "upper_ident": {
+      "type": "PATTERN",
+      "value": "[A-Za-z]*"
+    },
+    "lower_ident": {
+      "type": "PATTERN",
+      "value": "[a-z]"
+    }
+  },
+  "extras": [
+    {
+      "type": "PATTERN",
+      "value": "\\s"
+    }
+  ],
+  "conflicts": [],
+  "externals": [],
+  "inline": []
+}

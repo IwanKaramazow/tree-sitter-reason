@@ -1,0 +1,25 @@
+{
+  "name": "tree-sitter-reason",
+  "version": "0.0.1",
+  "description": "Reason grammer for node-tree-sitter",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "tree-sitter": "^0.9.2",
+    "tree-sitter-cli": "^0.9.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "tree-sitter generate && node-gyp build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "parser",
+    "lexer",
+    "reason"
+  ],
+  "author": "Iwan Karamazow",
+  "license": "MIT"
+}

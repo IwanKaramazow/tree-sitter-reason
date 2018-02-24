@@ -4,7 +4,7 @@
 
 using namespace v8;
 
-extern "C" TSLanguage * tree_sitter_arithmetic();
+extern "C" TSLanguage * tree_sitter_reason();
 
 namespace {
 
@@ -17,12 +17,12 @@ void Init(Handle<Object> exports, Handle<Object> module) {
 
   Local<Function> constructor = tpl->GetFunction();
   Local<Object> instance = constructor->NewInstance(Nan::GetCurrentContext()).ToLocalChecked();
-  Nan::SetInternalFieldPointer(instance, 0, tree_sitter_arithmetic());
+  Nan::SetInternalFieldPointer(instance, 0, tree_sitter_reason());
 
-  instance->Set(Nan::New("name").ToLocalChecked(), Nan::New("arithmetic").ToLocalChecked());
+  instance->Set(Nan::New("name").ToLocalChecked(), Nan::New("reason").ToLocalChecked());
   module->Set(Nan::New("exports").ToLocalChecked(), instance);
 }
 
-NODE_MODULE(tree_sitter_arithmetic_binding, Init)
+NODE_MODULE(tree_sitter_reason_binding, Init)
 
 }  // namespace

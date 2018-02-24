@@ -4,38 +4,108 @@ module.exports = grammar({
   // extras: $ => [$.comment, /\s/],
 
   rules: {
-    program: $ => choice(
-      $.upper_ident,
-      $.lower_ident,
+    program: $ => seq(
+      optional($.hash_bang_line),
+      repeat($.structure_item)
     ),
-    // hash_bang_line: $ => /#!.*/,
 
-    // structure: $ => seq(
-      // optional($.hash_bang_line),
-      // repeat($.structure_item)
+    // structure: $ => repeat(
+      // $.structure_item,
     // ),
 
-    // structure_item: $ => choice(
-      // $._str_open
-    // ),
+    structure_item: $ => choice(
+      $.str_open,
+      $.str_eval,
+      $.str_value
+    ),
 
-    // _str_open: $ => seq(
-      // 'open',
-      // $._ident 
-    // ),
+    hash_bang_line: $ => /#!.*/,
 
-    // _ident: $ => choice(
-      // $._upper_ident,
-      // $._lower_ident
-    // ),
+    str_eval: $ => $.expr,
+
+    str_value: $ => seq(
+      "let",
+      optional("rec"),
+      $.value_binding,
+      ";"
+    ),
+
+    str_open: $ => seq(
+      "open",
+      $.ident,
+      ";"
+    ),
+
+    value_binding: $ => seq(
+      $.pattern,
+      '=',
+      $.expr
+    ),
+
+    pattern: $ => choice(
+      $.pat_var
+    ),
+
+    pat_var: $ => $.lower_ident,
+
+
+    expr: $ => choice(
+      $.exp_ident,
+      $.exp_constant,
+    ),
+
+    exp_ident: $ => $.ident,
+
+    exp_constant: $ => choice(
+      $.const_integer,
+      $.const_char,
+      $.const_string,
+      $.const_float
+    ),
+
+    const_char: $ => $.char,
+
+    const_string: $ => $.string, 
+
+    const_integer: $ => choice(
+      $.number,
+      seq($.number, /[G-Zg-z]/)
+    ),
+
+    const_float: $ => choice(
+      $.float,
+      seq($.float, /[G-Zg-z]/)
+    ),
+
+    string: $ => seq(
+      '"',
+      repeat(choice(/[^\\"\n]/, /\\(.|\n)/)),
+      '"'
+    ),
+
+    char: $ => seq("'", /[A-Za-z0-9]/, "'"),
+    
+    // 3.4 2e5 1.4e-4
+    float: $ => /[+\-]?\d+(\.\d+)?(e[+/-]?\d*)?/,
+
+    // TODO: http://caml.inria.fr/pub/docs/manual-ocaml/lex.html#integer-literal
+    // 
+    number: $ => /[+\-]?\d+/,
+
+    
+
+    ident: $ => choice(
+      $.upper_ident,
+      $.lower_ident
+    ),
 
     // _module_ident: $ => choice(
-      // $._upper_ident,
-      // $._upper_ident, '.', $._module_ident
+      // $.upper_ident,
+      // $.upper_ident, '.', $._module_ident
     // ),
 
-    upper_ident: $ => /[A-Za-z]*/,
-    lower_ident: $ => /[a-z]/,
+    upper_ident: $ => /[A-Z][a-z]*/,
+    lower_ident: $ => /[a-z]+/,
 
 
     // program: $ => repeat(choice(

@@ -43,10 +43,67 @@ module.exports = grammar({
     ),
 
     pattern: $ => choice(
-      $.pat_var
+      $.pat_any,
+      $.pat_var,
+      $.pat_alias,
+      $.pat_interval,
+      $.pat_tuple,
+      $.pat_array,
+      $.pat_or,
+      $.pat_lazy,
+      $.pat_open,
+      $.pat_exception
     ),
 
+    pat_any: $ => '_',
+
     pat_var: $ => $.lower_ident,
+
+    pat_alias: $ => seq(
+      $.pattern,
+      'as',
+      $.lower_ident
+    ),
+
+    pat_interval: $ => seq(
+      $.constant,
+      '..',
+      $.constant
+    ),
+
+    pat_tuple: $ => prec.right(seq(
+      '(',
+      $.pattern,
+      repeat(seq(',', $.pattern)),
+      optional(','),
+      ')'
+    )),
+
+    pat_array: $ => seq(
+      "[|",
+      $.pattern,
+      repeat(seq(',', $.pattern)),
+      optional(','),
+      "|]"
+    ),
+
+    pat_or: $ => prec.right(seq(
+      $.pattern, '|', $.pattern
+    )),
+
+    pat_lazy: $ => prec.right(
+      seq("lazy", $.pattern)
+    ),
+
+    pat_open: $ => prec.right(seq(
+      prec.left($.module_ident),
+      '.',
+      '(',
+      $.pattern,
+      ')'
+    )),
+
+    pat_exception: $ => prec.right(seq("exception", $.pattern)),
 
     braced_expr: $ => seq('{', $.expr, '}'),
 
@@ -57,7 +114,10 @@ module.exports = grammar({
       $.exp_function
     ),
 
+    exp_constant: $ => $.constant,
+
     exp_ident: $ => $.ident,
+
 
     exp_let: $ => seq(
       'let',
@@ -88,7 +148,7 @@ module.exports = grammar({
       $.expr
     ),
 
-    exp_constant: $ => choice(
+    constant: $ => choice(
       $.const_integer,
       $.const_char,
       $.const_string,
@@ -97,7 +157,7 @@ module.exports = grammar({
 
     const_char: $ => $.char,
 
-    const_string: $ => $.string, 
+    const_string: $ => $.string,
 
     const_integer: $ => choice(
       $.number,
@@ -116,28 +176,31 @@ module.exports = grammar({
     ),
 
     char: $ => seq("'", /[A-Za-z0-9]/, "'"),
-    
+
 
     // TODO: http://caml.inria.fr/pub/docs/manual-ocaml/lex.html#integer-literal
-    // 
+    //
     number: $ => /[+\-]?\d+/,
     // 3.4 2e5 1.4e-4
     float: $ => /[+\-]?\d+(\.\d+)(e[+/-]?\d*)?/,
 
 
-    
+
 
     ident: $ => choice(
       $.upper_ident,
       $.lower_ident
     ),
 
-    // _module_ident: $ => choice(
-      // $.upper_ident,
-      // $.upper_ident, '.', $._module_ident
-    // ),
+    // todo pat_open bug! | Reason.React.(element)
+    module_ident: $ => prec.left(
+      seq(
+        repeat(seq($.upper_ident, '.')),
+        $.upper_ident
+      )
+    ),
 
-    upper_ident: $ => /[A-Z][a-z]*/,
+    upper_ident: $ => /[A-Z][a-z]+/,
     lower_ident: $ => /[a-z]+/,
 
 
@@ -171,3 +234,11 @@ module.exports = grammar({
     // comment: $ => /#.*/
   }
 });
+
+function sep(delim, rule) {
+  return seq(
+    rule,
+    repeat(seq(delim, rule)),
+    optional(delim)
+  );
+}

@@ -22,6 +22,10 @@ let z =
   let a = 1
   a
 
+let f =
+  fun
+  | a when 1 => 1
+  
 
 `;
 document.setInputString(src);

@@ -54,6 +54,7 @@ module.exports = grammar({
       $.exp_ident,
       $.exp_constant,
       $.exp_let,
+      $.exp_function
     ),
 
     exp_ident: $ => $.ident,
@@ -67,6 +68,24 @@ module.exports = grammar({
       ),
       // ';',
       $.expr,
+    ),
+
+    exp_function: $ => prec.right(seq(
+      'fun',
+      repeat($.case)
+    )),
+
+    case: $ => seq(
+      '|',
+      $.pattern,
+      optional($.guard),
+      "=>",
+      $.expr
+    ),
+
+    guard: $ => seq(
+      'when',
+      $.expr
     ),
 
     exp_constant: $ => choice(

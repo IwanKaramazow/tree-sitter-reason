@@ -7,9 +7,22 @@ document.setLanguage(require("./index.js"));
 const src = `
 #!/usr/bin/env reason
 
-open React;
+open React
 
-let x = 2.23e-10G;
+let y = 2
+
+let x = 1
+
+let z = {
+  let a = 1
+  a
+}
+
+let z = 
+  let a = 1
+  a
+
+
 `;
 document.setInputString(src);
 document.parse();

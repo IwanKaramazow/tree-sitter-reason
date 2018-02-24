@@ -23,23 +23,23 @@ module.exports = grammar({
 
     str_eval: $ => $.expr,
 
-    str_value: $ => seq(
+    str_value: $ => prec.left(seq(
       "let",
       optional("rec"),
       $.value_binding,
-      ";"
-    ),
+      repeat(seq("and", $.value_binding)),
+    )),
 
     str_open: $ => seq(
       "open",
       $.ident,
-      ";"
+      optional(";")
     ),
 
     value_binding: $ => seq(
       $.pattern,
       '=',
-      $.expr
+      choice($.expr, $.braced_expr)
     ),
 
     pattern: $ => choice(
@@ -48,13 +48,26 @@ module.exports = grammar({
 
     pat_var: $ => $.lower_ident,
 
+    braced_expr: $ => seq('{', $.expr, '}'),
 
     expr: $ => choice(
       $.exp_ident,
       $.exp_constant,
+      $.exp_let,
     ),
 
     exp_ident: $ => $.ident,
+
+    exp_let: $ => seq(
+      'let',
+      optional('rec'),
+      $.value_binding,
+      repeat(
+        seq('and', $.value_binding),
+      ),
+      // ';',
+      $.expr,
+    ),
 
     exp_constant: $ => choice(
       $.const_integer,
@@ -85,12 +98,13 @@ module.exports = grammar({
 
     char: $ => seq("'", /[A-Za-z0-9]/, "'"),
     
-    // 3.4 2e5 1.4e-4
-    float: $ => /[+\-]?\d+(\.\d+)?(e[+/-]?\d*)?/,
 
     // TODO: http://caml.inria.fr/pub/docs/manual-ocaml/lex.html#integer-literal
     // 
     number: $ => /[+\-]?\d+/,
+    // 3.4 2e5 1.4e-4
+    float: $ => /[+\-]?\d+(\.\d+)(e[+/-]?\d*)?/,
+
 
     
 

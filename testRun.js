@@ -7,7 +7,7 @@ document.setLanguage(require("./index.js"));
 const src = `
 let f =
   fun
-  | Reason.(element) => 1
+  | (module React) => 1
   
 
 `;

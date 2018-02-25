@@ -52,7 +52,8 @@ module.exports = grammar({
       $.pat_or,
       $.pat_lazy,
       $.pat_open,
-      $.pat_exception
+      $.pat_exception,
+      $.pat_unpack
     ),
 
     pat_any: $ => '_',
@@ -104,6 +105,14 @@ module.exports = grammar({
     )),
 
     pat_exception: $ => prec.right(seq("exception", $.pattern)),
+
+    pat_unpack: $ => seq(
+      "(",
+      // TODO make this a module expr
+      "module",
+      $.upper_ident,
+      ")",
+    ),
 
     braced_expr: $ => seq('{', $.expr, '}'),
 
@@ -192,12 +201,9 @@ module.exports = grammar({
       $.lower_ident
     ),
 
-    // todo pat_open bug! | Reason.React.(element)
-    module_ident: $ => prec.left(
-      seq(
-        repeat(seq($.upper_ident, '.')),
-        $.upper_ident
-      )
+    module_ident: $ => choice(
+      $.upper_ident,
+      seq($.module_ident, '.', $.upper_ident)
     ),
 
     upper_ident: $ => /[A-Z][a-z]+/,

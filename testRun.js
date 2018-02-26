@@ -5,10 +5,8 @@ const document = new Document();
 document.setLanguage(require("./index.js"));
 
 const src = `
-let f =
-  fun
-  | (module React) => 1
-  
+  type x = .. 
+    and y = ..
 
 `;
 document.setInputString(src);

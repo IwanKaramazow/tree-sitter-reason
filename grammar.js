@@ -16,7 +16,8 @@ module.exports = grammar({
     structure_item: $ => choice(
       $.str_open,
       $.str_eval,
-      $.str_value
+      $.str_value,
+      $.str_type
     ),
 
     hash_bang_line: $ => /#!.*/,
@@ -208,6 +209,24 @@ module.exports = grammar({
 
     upper_ident: $ => /[A-Z][a-z]+/,
     lower_ident: $ => /[a-z]+/,
+
+    str_type: $ => seq(
+      "type",
+      optional("rec"),
+      $.type_declaration,
+      repeat(seq('and', $.type_declaration))
+    ),
+
+    type_declaration: $ => seq(
+      $.lower_ident,
+      '=',
+      choice(
+        $.type_open,
+      )
+    ),
+
+    type_open: $ => "..",
+
 
 
     // program: $ => repeat(choice(

@@ -40,7 +40,8 @@ module.exports = grammar({
     value_binding: $ => seq(
       $.pattern,
       '=',
-      choice($.expr, $.braced_expr)
+      $.expr
+      // choice($.expr, $.braced_expr)
     ),
 
     pattern: $ => choice(
@@ -121,7 +122,11 @@ module.exports = grammar({
       $.exp_ident,
       $.exp_constant,
       $.exp_let,
-      $.exp_function
+      $.exp_function,
+      $.exp_unreachable,
+      $.exp_lazy,
+      $.braced_expr
+      
     ),
 
     exp_constant: $ => $.constant,
@@ -136,7 +141,6 @@ module.exports = grammar({
       repeat(
         seq('and', $.value_binding),
       ),
-      // ';',
       $.expr,
     ),
 
@@ -144,6 +148,13 @@ module.exports = grammar({
       'fun',
       repeat($.case)
     )),
+
+    exp_lazy: $ => seq(
+      'lazy',
+      $.expr
+    ),
+
+    exp_unreachable: $ => '.',
 
     case: $ => seq(
       '|',
@@ -214,18 +225,144 @@ module.exports = grammar({
       "type",
       optional("rec"),
       $.type_declaration,
-      repeat(seq('and', $.type_declaration))
+      repeat(seq('and', $.type_declaration)),
+      optional(';')
     ),
 
     type_declaration: $ => seq(
+      $.lower_ident, // TODO make type ident
+      optional($.type_params),
+      optional($.type_manifest),
+      optional($.type_representation),
+      repeat($.type_constraint),
+    ),
+
+    type_constraint: $ => seq(
+      "optional",
+      // TODO type_ident
       $.lower_ident,
       '=',
+      $.core_type
+    ),
+
+    type_representation: $ => seq(
+      '=',
       choice(
-        $.type_open,
+        seq(
+          optional('|'),
+          $.constr_decl,
+          repeat(seq('|', $.constr_decl)),
+        ),
+        $.record_decl,
       )
     ),
 
+    constr_decl: $ => seq(
+      $.upper_ident,
+      $.constr_args
+    ),
+
+    constr_args: $ => seq(
+      '(',
+      $.core_type,
+      repeat(seq(',', $.core_type)),
+      optional(','),
+      ')',
+    ),
+
+    record_decl: $ => seq(
+      '{',
+      $.field_decl,
+      repeat(seq(',', $.field_decl)),
+      optional(','),
+      '}'
+    ),
+
+    field_decl: $ => seq(
+      optional('mutable'),
+      $.lower_ident,
+      ':',
+      // TODO poly-typexpr?
+      $.core_type,
+    ),
+
+    // rename to type_equation?
+    type_manifest: $ => seq(
+      '=',
+      $.core_type,
+    ),
+
+    // todo inline ?
+    type_params: $ => seq(
+      '(',
+      repeat($.type_param),
+      ')',
+    ),
+
+    type_param: $ => seq(
+      // $.variance,
+      optional(choice('+', '-')),
+      "'",
+      $.lower_ident, // todo make type_identifier
+    ),
+
     type_open: $ => "..",
+
+    core_type: $ =>
+      //todo attibutes
+      $.core_type_desc,
+
+    core_type_desc: $ => choice(
+      $.typ_any,
+      $.typ_var,
+      $.typ_tuple,
+      // $.typ_constr,
+      $.typ_alias,
+      // TODO limited to context
+      // $.typ_poly,
+    ),
+
+    typ_any: $ => '_',
+
+    typ_var: $ => $.lower_ident,
+
+    typ_tuple: $ => seq(
+      '(',
+      $.core_type,
+      repeat(seq(',', $.core_type)),
+      optional(','),
+      ')',
+    ),
+
+    typ_alias: $ => seq(
+      $.core_type,
+      'as',
+      // TODO type_identifier '
+      $.lower_ident,
+    ),
+
+    typ_poly: $ => seq(
+      repeat1($.lower_ident),
+      '.',
+      $.core_type
+    ),
+
+    // typ_constr: $ => seq(
+      // optional(seq($.extended_module_path, '.')),
+      // $.lower_ident,
+      
+    // ),
+
+    // extended_module_path: $ => prec.left(seq(
+      // // TODO there's someting with parens
+      // $.upper_ident,
+      // repeat(seq('.', $.extended_module_path)),
+    // )),
+
+
+
+
+
 
 
 
@@ -259,11 +396,3 @@ module.exports = grammar({
     // comment: $ => /#.*/
   }
 });
-
-function sep(delim, rule) {
-  return seq(
-    rule,
-    repeat(seq(delim, rule)),
-    optional(delim)
-  );
-}

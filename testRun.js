@@ -5,8 +5,10 @@ const document = new Document();
 document.setLanguage(require("./index.js"));
 
 const src = `
-  type x = .. 
-    and y = ..
+  type x = (string, string) as x;
+  
+  type l = int;
+    
 
 `;
 document.setInputString(src);

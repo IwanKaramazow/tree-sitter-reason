@@ -5,9 +5,8 @@ const document = new Document();
 document.setLanguage(require("./index.js"));
 
 const src = `
-  type x = (string, string) as x;
   
-  type l = int;
+  f(~a?)
     
 
 `;

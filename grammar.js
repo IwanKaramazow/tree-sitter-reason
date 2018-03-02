@@ -125,8 +125,8 @@ module.exports = grammar({
       $.exp_function,
       $.exp_unreachable,
       $.exp_lazy,
-      $.braced_expr
-      
+      $.braced_expr,
+      $.exp_apply,
     ),
 
     exp_constant: $ => $.constant,
@@ -155,6 +155,52 @@ module.exports = grammar({
     ),
 
     exp_unreachable: $ => '.',
+
+    exp_apply: $ => seq(
+      // TODO React.make (module)
+      $.lower_ident,
+      '(',
+      repeat($.argument),
+      ')'
+    ),
+
+    argument: $ => choice(
+      $.expr,
+      // TODO can we put the labeled w/expr & punned
+      // version under one rule? e.g. optional($.expr)
+      $.arg_labeled,
+      $.arg_labeled_punned,
+      $.arg_optional,
+      $.arg_optional_punned
+    ),
+
+    arg_labeled: $ => seq(
+      '~',
+      $.lower_ident,
+      '=',
+      $.expr
+    ),
+
+    arg_labeled_punned: $ => seq(
+      '~',
+      $.ident
+    ),
+
+    arg_optional: $ => seq(
+      '~',
+      $.lower_ident,
+      '=',
+      '?',
+      $.expr
+    ),
+
+    arg_optional_punned: $ => seq(
+      '~',
+      $.lower_ident,
+      '?',
+    ),
+
+
 
     case: $ => seq(
       '|',
@@ -350,7 +396,7 @@ module.exports = grammar({
     // typ_constr: $ => seq(
       // optional(seq($.extended_module_path, '.')),
       // $.lower_ident,
-      
+
     // ),
 
     // extended_module_path: $ => prec.left(seq(

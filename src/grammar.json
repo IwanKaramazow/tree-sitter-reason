@@ -482,6 +482,10 @@
         {
           "type": "SYMBOL",
           "name": "braced_expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_apply"
         }
       ]
     },
@@ -574,6 +578,131 @@
     "exp_unreachable": {
       "type": "STRING",
       "value": "."
+    },
+    "exp_apply": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "lower_ident"
+        },
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "argument"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "argument": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "arg_labeled"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "arg_labeled_punned"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "arg_optional"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "arg_optional_punned"
+        }
+      ]
+    },
+    "arg_labeled": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "~"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "lower_ident"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr"
+        }
+      ]
+    },
+    "arg_labeled_punned": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "~"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ident"
+        }
+      ]
+    },
+    "arg_optional": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "~"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "lower_ident"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "STRING",
+          "value": "?"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr"
+        }
+      ]
+    },
+    "arg_optional_punned": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "~"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "lower_ident"
+        },
+        {
+          "type": "STRING",
+          "value": "?"
+        }
+      ]
     },
     "case": {
       "type": "SEQ",

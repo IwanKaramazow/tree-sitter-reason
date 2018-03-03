@@ -6,8 +6,9 @@ document.setLanguage(require("./index.js"));
 
 // let x = a **! b
 const src = `
-let x = a != b
-let y = a || b
+  let z = <div click=((a) => 123)> (apply(123)) </div>
+
+  let y = <div pobrecito="123" />
 
 
 `;

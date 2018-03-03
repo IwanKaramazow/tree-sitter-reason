@@ -502,6 +502,260 @@
         {
           "type": "SYMBOL",
           "name": "exp_prefix"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr_jsx"
+        }
+      ]
+    },
+    "expr_jsx": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "jsx_element"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "jsx_element_self_closing"
+        }
+      ]
+    },
+    "jsx_element": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "jsx_start_tag"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "exp_jsx"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "jsx_closing_tag"
+        }
+      ]
+    },
+    "exp_jsx": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "exp_ident"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_constant"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_let"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_unreachable"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_lazy"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_tuple"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_jsx_parens"
+        }
+      ]
+    },
+    "exp_jsx_parens": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "exp_apply"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_fun"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_function"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_ident"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_constant"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_let"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_unreachable"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_lazy"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "exp_tuple"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "jsx_attr": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "lower_ident"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "exp_jsx"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "jsx_start_tag": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "lower_ident"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "upper_ident"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "jsx_attr"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ">"
+        }
+      ]
+    },
+    "jsx_closing_tag": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "STRING",
+          "value": "/"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "lower_ident"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "upper_ident"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ">"
+        }
+      ]
+    },
+    "jsx_element_self_closing": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "lower_ident"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "upper_ident"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "jsx_attr"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "/"
+        },
+        {
+          "type": "STRING",
+          "value": ">"
         }
       ]
     },

@@ -161,7 +161,80 @@ module.exports = grammar({
       $.exp_fun,
       $.exp_tuple,
       $.exp_infix,
-      $.exp_prefix
+      $.exp_prefix,
+      $.expr_jsx
+    ),
+
+    expr_jsx: $ => choice(
+      $.jsx_element,
+      $.jsx_element_self_closing
+    ),
+
+    jsx_element: $ => seq(
+      $.jsx_start_tag,
+      repeat($.exp_jsx),
+      $.jsx_closing_tag
+    ),
+
+   exp_jsx: $ => choice(
+      $.exp_ident,
+      $.exp_constant,
+      $.exp_let,
+      $.exp_unreachable,
+      $.exp_lazy,
+      $.exp_tuple,
+      $.exp_jsx_parens
+    ),
+
+    exp_jsx_parens: $ => seq(
+      '(',
+      choice(
+        $.exp_apply,
+        $.exp_fun,
+        $.exp_function,
+        $.exp_ident,
+        $.exp_constant,
+        $.exp_let,
+        $.exp_unreachable,
+        $.exp_lazy,
+        $.exp_tuple,
+       ),
+      ')'
+    ),
+
+    jsx_attr: $ => seq(
+      $.lower_ident,
+      optional(
+        seq(
+          '=',
+          $.exp_jsx
+        )
+      )
+    ),
+
+    jsx_start_tag: $ => seq(
+      '<',
+      // TODO modules
+      choice($.lower_ident, $.upper_ident),
+      repeat($.jsx_attr),
+      '>'
+    ),
+
+    jsx_closing_tag: $ => seq(
+      '<',
+      '/',
+      // TODO modules
+      choice($.lower_ident, $.upper_ident),
+      '>'
+    ),
+
+    jsx_element_self_closing: $ => seq(
+      '<',
+      // TODO modules
+      choice($.lower_ident, $.upper_ident),
+      repeat($.jsx_attr),
+      '/',
+      '>'
     ),
 
     exp_constant: $ => $.constant,

@@ -5,9 +5,8 @@ const document = new Document();
 document.setLanguage(require("./index.js"));
 
 const src = `
-  
-  f(~a?)
-    
+let x = (~a as y :int=?) => a
+
 
 `;
 document.setInputString(src);

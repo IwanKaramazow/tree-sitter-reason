@@ -3,6 +3,18 @@ module.exports = grammar({
 
   // extras: $ => [$.comment, /\s/],
 
+  conflicts: $ => [
+    /*
+     * This is the infamous es6 syntax problem in Reason
+     * Imagine the following:
+     *   let x = (a, b)
+     *   let x = (a, b) => a + b;
+     *  is (a, b) a tuple or es6 function arguments?
+     */
+    [$.pat_var, $.ident],
+    [$.pat_tuple, $.parameter]
+  ],
+
   rules: {
     program: $ => seq(
       optional($.hash_bang_line),
@@ -127,12 +139,25 @@ module.exports = grammar({
       $.exp_lazy,
       $.braced_expr,
       $.exp_apply,
+      $.exp_fun,
+      $.exp_tuple,
     ),
 
     exp_constant: $ => $.constant,
 
     exp_ident: $ => $.ident,
+    // seq(
+      // $.ident,
+      // choice(';', '\n')
+    // ),
 
+    exp_tuple: $ => seq(
+      '(',
+      $.expr,
+      repeat1(seq(',', $.expr)),
+      optional(','),
+      ')',
+    ),
 
     exp_let: $ => seq(
       'let',
@@ -149,6 +174,67 @@ module.exports = grammar({
       repeat($.case)
     )),
 
+    exp_fun: $ => seq(
+      $.es6_args,
+      "=>",
+      $.expr,
+    ),
+
+    es6_args: $ => seq(
+      '(',
+      $.parameter,
+      repeat(seq(',', $.parameter)),
+      optional(','),
+      ')',
+    ),
+
+    parameter: $ => choice(
+      $.pattern,
+      // TODO can probably written in one rule
+      $.param_labeled,
+      $.param_labeled_punned,
+      $.param_labeled_constraint,
+      $.param_optional,
+      $.param_optional_punned
+    ),
+
+    param_labeled: $ => seq(
+      '~',
+      $.lower_ident,
+      'as',
+      $.lower_ident,
+    ),
+
+    param_labeled_punned: $ => seq(
+      '~',
+      $.lower_ident
+    ),
+
+    param_labeled_constraint: $ => seq(
+      '~',
+      $.lower_ident,
+      seq(':', $.core_type)
+    ),
+
+    param_optional_punned: $ => seq(
+      '~',
+      $.lower_ident,
+      '=',
+      '?',
+    ),
+
+    param_optional: $ => seq(
+      '~',
+      $.lower_ident,
+      'as',
+      $.pattern,
+      optional(
+        seq(':', $.core_type)
+      ),
+      '=',
+      choice('?', $.expr)
+    ),
+
     exp_lazy: $ => seq(
       'lazy',
       $.expr
@@ -156,13 +242,13 @@ module.exports = grammar({
 
     exp_unreachable: $ => '.',
 
-    exp_apply: $ => seq(
+    exp_apply: $ => prec.right(2, seq(
       // TODO React.make (module)
       $.lower_ident,
       '(',
       repeat($.argument),
       ')'
-    ),
+    )),
 
     argument: $ => choice(
       $.expr,
@@ -199,8 +285,6 @@ module.exports = grammar({
       $.lower_ident,
       '?',
     ),
-
-
 
     case: $ => seq(
       '|',
@@ -275,13 +359,13 @@ module.exports = grammar({
       optional(';')
     ),
 
-    type_declaration: $ => seq(
+    type_declaration: $ => prec.right(seq(
       $.lower_ident, // TODO make type ident
       optional($.type_params),
       optional($.type_manifest),
       optional($.type_representation),
       repeat($.type_constraint),
-    ),
+    )),
 
     type_constraint: $ => seq(
       "optional",

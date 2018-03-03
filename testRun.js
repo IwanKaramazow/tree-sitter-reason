@@ -4,8 +4,10 @@ const document = new Document();
 
 document.setLanguage(require("./index.js"));
 
+// let x = a **! b
 const src = `
-let x = (~a as y :int=?) => a
+let x = a != b
+let y = a || b
 
 
 `;

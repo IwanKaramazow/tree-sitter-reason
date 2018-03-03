@@ -1,3 +1,22 @@
+// TODO: implement as array
+const PREC = {
+  prefix: 12,
+  hash: 11,
+  apply: 10, // function application, constructor application, tag application, assert, lazy
+  minus: 9, // - -. (prefix)
+  shift: 8, // **… lsl lsr asr
+  mult: 7, // *… /… %… mod land lor lxor
+  add: 6, // +… -…
+  concat: 5, // @… ^…
+  equal: 4, // =… <… >… |… &… $… !=
+  and: 3, // & &&
+  or: 2, // or ||
+
+}
+const operatorChars = choice(
+  '!', '$', '%', '&', '*', '+', '-', '.', '/', ':', '<', '=', '>', '?', '@', '^', '|', '~'
+);
+
 module.exports = grammar({
   name: "reason",
 
@@ -141,6 +160,8 @@ module.exports = grammar({
       $.exp_apply,
       $.exp_fun,
       $.exp_tuple,
+      $.exp_infix,
+      $.exp_prefix
     ),
 
     exp_constant: $ => $.constant,
@@ -180,6 +201,59 @@ module.exports = grammar({
       $.expr,
     ),
 
+    exp_infix: $ => choice(
+      prec.left(PREC.hash, seq(
+        $.expr,
+        $.hash_operator,
+        $.expr
+      )),
+      prec.right(PREC.shift, choice(
+        seq($.expr, $.shift_operator, $.expr),
+        choice("lsl", "lsr", "asr")
+      )),
+      prec.left(PREC.mult, choice(
+        seq($.expr, $.mult_operator, $.expr),
+        choice("mod", "land", "lor", "lxor")
+      )),
+      prec.left(
+        PREC.add,
+        seq($.expr, $.add_operator, $.expr)
+      ),
+      prec.right(
+        PREC.concat,
+        seq($.expr, $.concat_operator, $.expr)
+      ),
+      prec.left(
+        PREC.equal,
+        seq($.expr, $.equal_operator, $.expr),
+      ),
+      prec.right(
+        PREC.and,
+        seq($.expr, token(choice('&', '&&')), $.expr)
+      ),
+      prec.right(
+        PREC.or,
+        seq($.expr, token(choice("or", "||")), $.expr)
+      )
+    ),
+
+    exp_prefix: $ => choice(
+      prec(
+        PREC.prefix,
+        seq(
+          $.prefix_operator,
+          $.expr
+        )
+      ),
+      prec(
+        PREC.minus,
+        seq(
+          choice('-', '-.'),
+          $.expr
+        ),
+      ),
+    ),
+
     es6_args: $ => seq(
       '(',
       $.parameter,
@@ -190,7 +264,7 @@ module.exports = grammar({
 
     parameter: $ => choice(
       $.pattern,
-      // TODO can probably written in one rule
+      // TODO can probably written in one/less rule
       $.param_labeled,
       $.param_labeled_punned,
       $.param_labeled_constraint,
@@ -242,7 +316,7 @@ module.exports = grammar({
 
     exp_unreachable: $ => '.',
 
-    exp_apply: $ => prec.right(2, seq(
+    exp_apply: $ => prec.right(PREC.apply, seq(
       // TODO React.make (module)
       $.lower_ident,
       '(',
@@ -477,52 +551,56 @@ module.exports = grammar({
       $.core_type
     ),
 
-    // typ_constr: $ => seq(
-      // optional(seq($.extended_module_path, '.')),
-      // $.lower_ident,
+    hash_operator: $ => token(
+      seq(
+        '#', repeat1(operatorChars)
+      )
+    ),
 
-    // ),
+    prefix_operator: $ => token(
+      choice(
+        seq('!', repeat(operatorChars)),
+        seq(
+          choice('?', '~'),
+          repeat1(operatorChars)
+        )
+      )
+    ),
 
-    // extended_module_path: $ => prec.left(seq(
-      // // TODO there's someting with parens
-      // $.upper_ident,
-      // repeat(seq('.', $.extended_module_path)),
-    // )),
+    shift_operator: $ => token(
+      seq("**", repeat(operatorChars))
+    ),
 
+    mult_operator: $ => token(
+      seq(
+        choice("*", "/", "%"),
+        repeat(operatorChars)
+      )
+    ),
 
+    // TODO check precedence of ++ for list concatenation
+    add_operator: $ => token(
+      seq(
+        choice('+', '-'),
+        repeat(operatorChars)
+      )
+    ),
 
+    concat_operator: $ => token(
+      seq(
+        choice('@', '^'),
+        repeat(operatorChars)
+      )
+    ),
 
-
-
-
-
-    // program: $ => repeat(choice(
-      // $.assignment_statement,
-      // $.expression_statement
-    // )),
-
-    // assignment_statement: $ => seq(
-      // $.variable, "=", $.expression, ";"
-    // ),
-
-    // expression_statement: $ => seq(
-      // $.expression, ";"
-    // ),
-
-    // expression: $ => choice(
-      // $.variable,
-      // $.number,
-      // prec.left(1, seq($.expression, "+", $.expression)),
-      // prec.left(1, seq($.expression, "-", $.expression)),
-      // prec.left(2, seq($.expression, "*", $.expression)),
-      // prec.left(2, seq($.expression, "/", $.expression)),
-      // prec.left(3, seq($.expression, "^", $.expression))
-    // ),
-
-    // variable: $ => /\a\w*/,
-
-    // number: $ => /\d+/,
-
-    // comment: $ => /#.*/
+    equal_operator: $ => token(
+      choice(
+        seq(
+          choice("=", "<", ">", "|", "&", "$"),
+          repeat(operatorChars)
+        ),
+        "!="
+      )
+    ),
   }
 });

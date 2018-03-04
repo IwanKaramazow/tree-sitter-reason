@@ -168,7 +168,8 @@ module.exports = grammar({
       $.exp_infix,
       $.exp_prefix,
       $.expr_jsx,
-      $.exp_ifthenelse
+      $.exp_ifthenelse,
+      $.exp_assert
     ),
 
     expr_jsx: $ => choice(
@@ -365,6 +366,11 @@ module.exports = grammar({
       )
     ),
 
+    exp_assert: $ => seq(
+      'assert',
+      $.parenthesized_expr,
+    ),
+
     es6_args: $ => seq(
       '(',
       $.parameter,
@@ -422,7 +428,7 @@ module.exports = grammar({
 
     exp_lazy: $ => seq(
       'lazy',
-      $.expr
+      $.parenthesized_expr
     ),
 
     exp_unreachable: $ => '.',

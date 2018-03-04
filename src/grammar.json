@@ -527,6 +527,10 @@
         {
           "type": "SYMBOL",
           "name": "exp_ifthenelse"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_assert"
         }
       ]
     },
@@ -1333,6 +1337,19 @@
         }
       ]
     },
+    "exp_assert": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "assert"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "parenthesized_expr"
+        }
+      ]
+    },
     "es6_args": {
       "type": "SEQ",
       "members": [
@@ -1556,7 +1573,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "expr"
+          "name": "parenthesized_expr"
         }
       ]
     },

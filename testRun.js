@@ -6,13 +6,9 @@ document.setLanguage(require("./index.js"));
 
 // let x = a **! b
 const src = `
-  let z = if (a === b) {
-    log("two")
-  } else if (a === 3) {
-    log("three")
-  } else {
-    log("okokok")
-  }
+  assert(false)
+
+  lazy(false)
 `;
 document.setInputString(src);
 document.parse();

@@ -6,15 +6,13 @@ document.setLanguage(require("./index.js"));
 
 // let x = a **! b
 const src = `
-  let z = <div click=((a) => 123)> (apply(123)) </div>
-
-  let y = <div pobrecito="123" />
-
-  let x = <> </>
-
-  let z = </>
-
-
+  let z = if (a === b) {
+    log("two")
+  } else if (a === 3) {
+    log("three")
+  } else {
+    log("okokok")
+  }
 `;
 document.setInputString(src);
 document.parse();

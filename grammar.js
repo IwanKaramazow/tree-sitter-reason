@@ -148,6 +148,11 @@ module.exports = grammar({
     ),
 
     braced_expr: $ => seq('{', $.expr, '}'),
+    parenthesized_expr: $ => seq(
+      '(',
+      $.expr,
+      ')',
+    ),
 
     expr: $ => choice(
       $.exp_ident,
@@ -162,7 +167,8 @@ module.exports = grammar({
       $.exp_tuple,
       $.exp_infix,
       $.exp_prefix,
-      $.expr_jsx
+      $.expr_jsx,
+      $.exp_ifthenelse
     ),
 
     expr_jsx: $ => choice(
@@ -338,6 +344,25 @@ module.exports = grammar({
           $.expr
         ),
       ),
+    ),
+
+    exp_ifthenelse: $ => seq(
+      'if',
+      $.parenthesized_expr,
+      $.braced_expr,
+      repeat(
+        seq(
+          'else if',
+          $.parenthesized_expr,
+          $.braced_expr
+        )
+      ),
+      optional(
+        seq(
+          'else',
+          $.braced_expr
+        )
+      )
     ),
 
     es6_args: $ => seq(

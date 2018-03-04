@@ -6,9 +6,9 @@ document.setLanguage(require("./index.js"));
 
 // let x = a **! b
 const src = `
-  assert(false)
-
-  lazy(false)
+  while(true) {
+    log("test")
+  }
 `;
 document.setInputString(src);
 document.parse();

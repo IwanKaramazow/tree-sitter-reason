@@ -531,6 +531,10 @@
         {
           "type": "SYMBOL",
           "name": "exp_assert"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_while"
         }
       ]
     },
@@ -1334,6 +1338,23 @@
               "type": "BLANK"
             }
           ]
+        }
+      ]
+    },
+    "exp_while": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "while"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "parenthesized_expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "braced_expr"
         }
       ]
     },

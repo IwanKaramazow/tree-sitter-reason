@@ -169,7 +169,8 @@ module.exports = grammar({
       $.exp_prefix,
       $.expr_jsx,
       $.exp_ifthenelse,
-      $.exp_assert
+      $.exp_assert,
+      $.exp_while
     ),
 
     expr_jsx: $ => choice(
@@ -364,6 +365,12 @@ module.exports = grammar({
           $.braced_expr
         )
       )
+    ),
+
+    exp_while: $ => seq(
+      "while",
+      $.parenthesized_expr,
+      $.braced_expr
     ),
 
     exp_assert: $ => seq(

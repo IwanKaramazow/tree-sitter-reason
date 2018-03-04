@@ -10,6 +10,10 @@ const src = `
 
   let y = <div pobrecito="123" />
 
+  let x = <> </>
+
+  let z = </>
+
 
 `;
 document.setInputString(src);

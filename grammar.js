@@ -167,7 +167,20 @@ module.exports = grammar({
 
     expr_jsx: $ => choice(
       $.jsx_element,
-      $.jsx_element_self_closing
+      $.jsx_element_self_closing,
+      $.jsx_fragment,
+      $.jsx_fragment_self_closing
+    ),
+
+    // TODO: can we put fragment & fragment_self_closing under one rule ?
+    jsx_fragment: $ => seq(
+      seq('<', '>'),
+      repeat($.exp_jsx),
+      seq('<', '/', '>')
+    ),
+
+    jsx_fragment_self_closing: $ => seq(
+      '<', '/', '>'
     ),
 
     jsx_element: $ => seq(

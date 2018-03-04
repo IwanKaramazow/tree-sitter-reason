@@ -6,7 +6,7 @@ document.setLanguage(require("./index.js"));
 
 // let x = a **! b
 const src = `
-  while(true) {
+  for (i in 0 to 100) {
     log("test")
   }
 `;

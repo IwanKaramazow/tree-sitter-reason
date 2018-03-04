@@ -535,6 +535,10 @@
         {
           "type": "SYMBOL",
           "name": "exp_while"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exp_for"
         }
       ]
     },
@@ -1368,6 +1372,56 @@
         {
           "type": "SYMBOL",
           "name": "parenthesized_expr"
+        }
+      ]
+    },
+    "exp_for": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "for"
+        },
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "SYMBOL",
+          "name": "pattern"
+        },
+        {
+          "type": "STRING",
+          "value": "in"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "to"
+            },
+            {
+              "type": "STRING",
+              "value": "downto"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr"
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr"
         }
       ]
     },

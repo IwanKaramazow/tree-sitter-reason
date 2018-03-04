@@ -170,7 +170,8 @@ module.exports = grammar({
       $.expr_jsx,
       $.exp_ifthenelse,
       $.exp_assert,
-      $.exp_while
+      $.exp_while,
+      $.exp_for
     ),
 
     expr_jsx: $ => choice(
@@ -376,6 +377,18 @@ module.exports = grammar({
     exp_assert: $ => seq(
       'assert',
       $.parenthesized_expr,
+    ),
+
+    exp_for: $ => seq(
+      'for',
+      '(',
+      $.pattern,
+      'in',
+      $.expr,
+      choice("to",  "downto"),
+      $.expr,
+      ')',
+      $.expr
     ),
 
     es6_args: $ => seq(

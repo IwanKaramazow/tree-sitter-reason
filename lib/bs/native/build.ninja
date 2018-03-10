@@ -1,0 +1,69 @@
+bs_package_flags = -bs-package-name ReasonTreeSitter
+src_root_dir = /Users/Iwan/Development/tree-sitter-reason
+bsc = /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/lib/bsc.exe
+bsb_helper = /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/lib/bsb_helper.exe
+warnings = -w -30-40+6+7+27+32..39+44+45+101
+bsc_flags = -bs-D BSB_BACKEND="native" -nostdlib -I '/Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/lib/ocaml' -no-alias-deps -color always
+ppx_flags = 
+bs_package_includes = 
+bs_package_dev_includes = 
+namespace = 
+bsb_dir_group = 0
+ocaml_flags = -thread   -no-alias-deps   -color   always
+bs_super_errors_ocamlfind = -bs-super-errors
+bs_super_errors = -bs-super-errors
+external_deps_for_linking = 
+ocamlc = /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/vendor/ocaml/ocamlc.opt
+ocamlopt = /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/vendor/ocaml/ocamlopt.opt
+ocamlfind = 
+ocamlfind_dependencies = 
+ocaml_dependencies = -add-ocaml-dependency bigarray -add-ocaml-dependency dynlink -add-ocaml-dependency nums -add-ocaml-dependency str -add-ocaml-dependency threads -add-ocaml-dependency unix
+open_flag = 
+bsb_helper_verbose = 
+refmt = /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/lib/refmt3.exe
+reason_react_jsx = 
+refmt_flags = --print binary
+bsc_lib_includes = -I /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/vendor/ocaml/lib/ocaml -I src
+rule build_ast_and_module_sets_from_re_gen_simple
+  command = ${bsc} -pp "${refmt} ${refmt_flags}" ${reason_react_jsx}  ${ppx_flags} ${bs_super_errors} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-simple-binary-ast -bs-binary-ast -impl ${in}
+  description = [34mBuilding[39m [2m${out}[22m
+build src/index.mlast : build_ast_and_module_sets_from_re_gen_simple $src_root_dir/src/index.re
+rule build_deps_native
+  command = ${bsb_helper} ${namespace} -g ${bsb_dir_group} -MD-native ${in}
+  description = [34mBuilding[39m [2m${out}[22m
+build src/index.mlast.d : build_deps_native src/index.mlast
+rule build_cmx_cmi_native
+  command = ${ocamlfind}${ocamlopt} ${open_flag} ${bs_super_errors_ocamlfind} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${ocamlfind_dependencies} ${ocaml_flags} -o ${out} ${warnings} -g -c -intf-suffix .mliast_simple -impl ${in}_simple ${postbuild}
+  depfile = ${in}.d
+  description = [34mBuilding[39m [2m${out}[22m
+build src/index.cmx |  src/index.cmi : build_cmx_cmi_native src/index.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:lib/js/src
+build src/Uint32.mlast : build_ast_and_module_sets_from_re_gen_simple $src_root_dir/src/Uint32.re
+build src/Uint32.mlast.d : build_deps_native src/Uint32.mlast
+build src/Uint32.cmx |  src/Uint32.cmi : build_cmx_cmi_native src/Uint32.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:lib/js/src
+build src/treesitter.mlast : build_ast_and_module_sets_from_re_gen_simple $src_root_dir/src/treesitter.re
+build src/treesitter.mlast.d : build_deps_native src/treesitter.mlast
+build src/treesitter.cmx |  src/treesitter.cmi : build_cmx_cmi_native src/treesitter.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:lib/js/src
+rule linking_native
+  command = ${bsb_helper} ${bsb_helper_verbose} ${ocaml_dependencies} ${warnings} ${namespace} -bs-main ${main_module} ${bs_super_errors} ${static_libraries} ${ocamlfind_dependencies} ${external_deps_for_linking} ${in} -link-native ${out}
+  description = [34mBuilding[39m [2m${out}[22m
+build index.native : linking_native  src/treesitter.mlast src/Uint32.mlast src/index.mlast |  src/treesitter.cmi src/Uint32.cmi src/index.cmi src/treesitter.cmx src/Uint32.cmx src/index.cmx /Users/Iwan/Development/tree-sitter-reason/vendor/tree-sitter/out/Release/libruntime.a /Users/Iwan/Development/tree-sitter-reason/lib/c/ts_reason_parser.o /Users/Iwan/Development/tree-sitter-reason/lib/c/reason_bridge.o
+  main_module = Index
+  static_libraries = -add-clib /Users/Iwan/Development/tree-sitter-reason/vendor/tree-sitter/out/Release/libruntime.a -add-clib /Users/Iwan/Development/tree-sitter-reason/lib/c/ts_reason_parser.o -add-clib /Users/Iwan/Development/tree-sitter-reason/lib/c/reason_bridge.o
+rule build_script
+  command = ${ocamlc} unix.cma ${linked_internals} ${refmt} -open Bsb_internals -o ${out} ${impl} ${in}
+  description = [34mBuilding[39m [2m${out}[22m
+build /Users/Iwan/Development/tree-sitter-reason/lib/bs/native/build_script.exe : build_script  /Users/Iwan/Development/tree-sitter-reason/lib/bs/native/build_script.re ||  src/treesitter.mlast.d src/Uint32.mlast.d src/index.mlast.d
+  linked_internals = $linked_internals -I /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/lib /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/lib/bsb_internals.cmo
+  refmt = -pp "/Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/lib/refmt3.exe --print binary"
+  impl = -impl
+rule run_build_script
+  command = /Users/Iwan/Development/tree-sitter-reason/lib/bs/native/build_script.exe /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/vendor /Users/Iwan/Development/tree-sitter-reason/node_modules/bs-platform/vendor/ocaml/lib/ocaml /Users/Iwan/Development/tree-sitter-reason /Users/Iwan/Development/tree-sitter-reason
+  description = [34mBuilding[39m [2m${out}[22m
+build run_build_script : run_build_script  ||  /Users/Iwan/Development/tree-sitter-reason/lib/bs/native/build_script.exe
+build build.ninja : phony  ||  run_build_script src/treesitter.mlast.d src/Uint32.mlast.d src/index.mlast.d

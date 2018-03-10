@@ -1,0 +1,15 @@
+{
+  "name" : "ReasonTreeSitter",
+  "sources" : "src",
+  "entries": [{
+    "backend": "native",
+    "main-module": "Index" // Capitalized name of module (not a path)
+  }],
+ "build-script": "build_script.re",
+ "refmt": 3,
+ "static-libraries": [
+    "vendor/tree-sitter/out/Release/libruntime.a",
+    "lib/c/ts_reason_parser.o",
+    "lib/c/reason_bridge.o"
+ ]
+}

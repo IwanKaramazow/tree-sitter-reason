@@ -6,7 +6,7 @@ module Uint32 = {
 let () = {
   let doc = Treesitter.ts_document_new();
   Treesitter.ts_set_language(doc, Treesitter.tree_sitter_reason());
-  Treesitter.ts_document_set_input_string(doc, "log(1) let x = 1");
+  Treesitter.ts_document_set_input_string(doc, "log(1)\n let x = 1");
   Treesitter.ts_document_parse(doc);
   let rootNode = Treesitter.getRootNode(doc);
   print_endline("");
@@ -25,7 +25,7 @@ let () = {
   print_endline(string_of_bool(Treesitter.AstNode.equals(rootNode, rootNode)));
   print_endline(string_of_bool(rootNode.type_ == "program"));
   print_endline(rootNode.type_);
-  Gc.full_major();
-  /* print_endline(Treesitter.AstNode.ts_node_string(rootNode, doc)); */
+  print_endline(Treesitter.Point.toString(rootNode.startPoint));
+  print_endline(Treesitter.Point.toString(rootNode.endPoint));
   Treesitter.ts_document_free(doc);
 };

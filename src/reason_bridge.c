@@ -8,9 +8,6 @@
 
 TSLanguage *tree_sitter_reason();
 
-typedef struct {
-  TSNode node;
-} AstNode;
 
 CAMLprim value caml_tree_sitter_reason(value unit) {
   CAMLparam1(unit);
@@ -52,7 +49,6 @@ CAMLprim value caml_ts_document_root_node(value document) {
   CAMLparam1(document);
 
   TSNode root_node = ts_document_root_node(document);
-
   // store on heap, otherwise segfaults
   // because root_node sits in stack memory
   // stack memory gets reassigned
@@ -60,20 +56,33 @@ CAMLprim value caml_ts_document_root_node(value document) {
   node->data = root_node.data;
   memcpy(node->offset, root_node.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7, 0);
+  startPointCaml = caml_alloc(2, 0);
+  endPointCaml = caml_alloc(2, 0);
 
   const char* typ = ts_node_type(root_node, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(root_node); 
   uint32_t endByte = ts_node_end_byte(root_node);
 
+  TSPoint startPoint = ts_node_start_point(root_node);
+  TSPoint endPoint = ts_node_start_point(root_node);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
+
   Store_field(astNode, 0, node);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }
@@ -196,20 +205,30 @@ CAMLprim value caml_ts_node_parent(value n, value document) {
   proxy->data = parent.data;
   memcpy(proxy->offset, parent.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7,0);
 
   const char* typ = ts_node_type(parent, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(parent); 
   uint32_t endByte = ts_node_end_byte(parent);
 
+  TSPoint startPoint = ts_node_start_point(parent);
+  TSPoint endPoint = ts_node_start_point(parent);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
   Store_field(astNode, 0, proxy);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }
@@ -225,20 +244,30 @@ CAMLprim value caml_ts_node_child(value n, value document, value i) {
   proxy->data = child.data;
   memcpy(proxy->offset, child.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7,0);
 
   const char* typ = ts_node_type(child, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(child); 
   uint32_t endByte = ts_node_end_byte(child);
 
+  TSPoint startPoint = ts_node_start_point(child);
+  TSPoint endPoint = ts_node_start_point(child);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
   Store_field(astNode, 0, proxy);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }
@@ -254,20 +283,30 @@ CAMLprim value caml_ts_node_named_child(value n, value document, value i) {
   proxy->data = child.data;
   memcpy(proxy->offset, child.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7,0);
 
   const char* typ = ts_node_type(child, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(child); 
   uint32_t endByte = ts_node_end_byte(child);
 
+  TSPoint startPoint = ts_node_start_point(child);
+  TSPoint endPoint = ts_node_start_point(child);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
   Store_field(astNode, 0, proxy);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }
@@ -283,20 +322,30 @@ CAMLprim value caml_ts_node_next_sibling(value n, value document) {
   proxy->data = result.data;
   memcpy(proxy->offset, result.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7,0);
 
   const char* typ = ts_node_type(result, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(result); 
   uint32_t endByte = ts_node_end_byte(result);
 
+  TSPoint startPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_start_point(result);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
   Store_field(astNode, 0, proxy);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }
@@ -312,20 +361,30 @@ CAMLprim value caml_ts_node_next_named_sibling(value n, value document) {
   proxy->data = result.data;
   memcpy(proxy->offset, result.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7,0);
 
   const char* typ = ts_node_type(result, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(result); 
   uint32_t endByte = ts_node_end_byte(result);
 
+  TSPoint startPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_start_point(result);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
   Store_field(astNode, 0, proxy);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }
@@ -341,20 +400,30 @@ CAMLprim value caml_ts_node_prev_named_sibling(value n, value document) {
   proxy->data = result.data;
   memcpy(proxy->offset, result.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7,0);
 
   const char* typ = ts_node_type(result, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(result); 
   uint32_t endByte = ts_node_end_byte(result);
 
+  TSPoint startPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_start_point(result);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
   Store_field(astNode, 0, proxy);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }
@@ -370,20 +439,30 @@ CAMLprim value caml_ts_node_prev_sibling(value n, value document) {
   proxy->data = result.data;
   memcpy(proxy->offset, result.offset, 2);
 
-  CAMLlocal2(astNode, typString);
+  CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
-  astNode = caml_alloc(5, 0);
+  astNode = caml_alloc(7,0);
 
   const char* typ = ts_node_type(result, document);
   typString = caml_copy_string(typ);
   uint32_t startByte = ts_node_start_byte(result); 
   uint32_t endByte = ts_node_end_byte(result);
 
+  TSPoint startPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_start_point(result);
+
+  Store_field(startPointCaml, 0, Val_int(startPoint.row));
+  Store_field(startPointCaml, 1, Val_int(endPoint.row));
+  Store_field(endPointCaml, 0, Val_int(startPoint.row));
+  Store_field(endPointCaml, 1, Val_int(endPoint.row));
+
   Store_field(astNode, 0, proxy);
   Store_field(astNode, 1, document);
   Store_field(astNode, 2, typString);
   Store_field(astNode, 3, Val_int(startByte)); 
   Store_field(astNode, 4, Val_int(endByte));
+  Store_field(astNode, 5, startPointCaml);
+  Store_field(astNode, 6, endPointCaml);
 
   CAMLreturn(astNode);
 }

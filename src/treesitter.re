@@ -6,13 +6,28 @@ type ts_point;
 
 type ts_node;
 
+module Point = {
+  type t = {
+    column: int,
+    row: int
+  };
+  let toString = ({column, row}) =>
+    "(Point.t {:row "
+    ++ string_of_int(row)
+    ++ " :column "
+    ++ string_of_int(column)
+    ++ "})";
+};
+
 module AstNode = {
   type t = {
     node: ts_node,
     document: ts_document,
     type_: string,
     startByte: int,
-    endByte: int
+    endByte: int,
+    startPoint: Point.t,
+    endPoint: Point.t
   };
   external ts_node_string : (ts_node, ts_document) => string =
     "caml_ts_node_string";

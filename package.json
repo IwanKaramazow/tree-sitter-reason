@@ -7,14 +7,13 @@
     "test": "test"
   },
   "dependencies": {
-    "tree-sitter": "^0.10.0",
     "tree-sitter-cli": "^0.10.1"
   },
   "devDependencies": {
     "bs-platform": "https://github.com/bsansouci/bsb-native.git"
   },
   "scripts": {
-    "build": "tree-sitter generate && node-gyp build",
+    "build": "tree-sitter generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

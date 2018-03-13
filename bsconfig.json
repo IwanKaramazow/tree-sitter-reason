@@ -1,15 +1,23 @@
 {
   "name" : "ReasonTreeSitter",
-  "sources" : "src",
+  "sources" : ["src", "test"],
   "entries": [{
     "backend": "native",
     "main-module": "Index" // Capitalized name of module (not a path)
+  },
+  {
+    "backend": "native",
+    "main-module": "Test"
   }],
- "build-script": "build_script.re",
+ "build-script": "scripts/build_script.re",
  "refmt": 3,
  "static-libraries": [
     "vendor/tree-sitter/out/Release/libruntime.a",
+    "vendor/tree-sitter/out/Release/libcompiler.a",
+//  "./lib/c/ts_compiler_bridge.o",
+    "lib/c/ts_arithmetics_parser.o",
+    "lib/c/ts_arithmetics_test_lang.o",
     "lib/c/ts_reason_parser.o",
-    "lib/c/reason_bridge.o"
+    "lib/c/ts_runtime_bridge.o"
  ]
 }

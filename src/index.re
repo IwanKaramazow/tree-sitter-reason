@@ -4,28 +4,36 @@ module Uint32 = {
 };
 
 let () = {
-  let doc = Treesitter.ts_document_new();
-  Treesitter.ts_set_language(doc, Treesitter.tree_sitter_reason());
-  Treesitter.ts_document_set_input_string(doc, "log(1)\n let x = 1");
-  Treesitter.ts_document_parse(doc);
-  let rootNode = Treesitter.getRootNode(doc);
-  print_endline("");
-  open Treesitter.AstNode;
+  let doc = TreeSitter.Document.newDoc();
+  TreeSitter.Document.setLanguage(
+    doc,
+    TreeSitter.Document.tree_sitter_reason()
+  );
+  TreeSitter.Document.setInputString(doc, "log(1) let x = 1");
+  TreeSitter.Document.parse(doc);
+  let rootNode = TreeSitter.Document.rootNode(doc);
+  /* print_endline(""); */
+  open TreeSitter.Node;
   print_endline(rootNode.type_);
   print_int(rootNode.startByte);
   print_newline();
   print_int(rootNode.endByte);
   print_newline();
-  print_endline(Treesitter.AstNode.toString(rootNode));
+  print_endline(TreeSitter.Node.toString(rootNode));
   print_newline();
   print_newline();
-  print_int(getChildCount(rootNode));
+  print_int(childCount(rootNode));
   print_newline();
+  print_int(namedChildCount(rootNode));
   print_newline();
-  print_endline(string_of_bool(Treesitter.AstNode.equals(rootNode, rootNode)));
+  print_endline(string_of_bool(TreeSitter.Node.equals(rootNode, rootNode)));
   print_endline(string_of_bool(rootNode.type_ == "program"));
   print_endline(rootNode.type_);
-  print_endline(Treesitter.Point.toString(rootNode.startPoint));
-  print_endline(Treesitter.Point.toString(rootNode.endPoint));
-  Treesitter.ts_document_free(doc);
+  print_endline(TreeSitter.Point.toString(rootNode.startPoint));
+  print_endline(TreeSitter.Point.toString(rootNode.endPoint));
+  print_newline();
+  let valueBinding = TreeSitter.Node.child(rootNode, 1);
+  print_endline(TreeSitter.Point.toString(valueBinding.startPoint));
+  print_endline(TreeSitter.Point.toString(valueBinding.endPoint));
+  TreeSitter.Document.free(doc);
 };

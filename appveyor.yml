@@ -1,0 +1,21 @@
+environment:
+  image: Visual Studio 2017
+  nodejs_version: "Stable"
+
+branches:
+  only:
+    - master
+
+platform:
+  - x64
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - node -v
+  - npm install
+
+test_script:
+  - node_modules\\.bin\\bsb -make-world -backend native
+  - lib\\bs\\native\\test.native
+
+build: off

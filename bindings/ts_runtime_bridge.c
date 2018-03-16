@@ -9,7 +9,6 @@
 
 TSLanguage *tree_sitter_reason();
 
-
 CAMLprim value caml_tree_sitter_reason(value unit) {
   CAMLparam1(unit);
   TSLanguage* l = tree_sitter_reason();   
@@ -51,12 +50,8 @@ CAMLprim value caml_ts_document_root_node(value document) {
 
   TSNode root_node = ts_document_root_node((TSDocument *) document);
 
-  // store on heap, otherwise segfaults
-  // because root_node sits in stack memory
-  // stack memory gets reassigned
   TSNode* node = malloc(sizeof(TSNode));
-  node->data = root_node.data;
-  memcpy(node->offset, root_node.offset, 2);
+  *node = root_node;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -204,8 +199,7 @@ CAMLprim value caml_ts_node_parent(value n, value document) {
   TSNode parent = ts_node_parent(*node);
 
   TSNode* proxy = malloc(sizeof(TSNode));
-  proxy->data = parent.data;
-  memcpy(proxy->offset, parent.offset, 2);
+  *proxy = parent;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -245,8 +239,7 @@ CAMLprim value caml_ts_node_child(value n, value document, value i) {
   TSNode child = ts_node_child(*node, Int_val(i));
 
   TSNode* proxy = malloc(sizeof(TSNode));
-  proxy->data = child.data;
-  memcpy(proxy->offset, child.offset, 2);
+  *proxy = child;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -259,8 +252,8 @@ CAMLprim value caml_ts_node_child(value n, value document, value i) {
   uint32_t startByte = ts_node_start_byte(child); 
   uint32_t endByte = ts_node_end_byte(child);
 
-  TSPoint startPoint = ts_node_start_point(child);
-  TSPoint endPoint = ts_node_start_point(child);
+  TSPoint startPoint = ts_node_start_point(*proxy);
+  TSPoint endPoint = ts_node_end_point(child);
 
   Store_field(startPointCaml, 0, Val_int(startPoint.row));
   Store_field(startPointCaml, 1, Val_int(startPoint.column));
@@ -284,10 +277,10 @@ CAMLprim value caml_ts_node_named_child(value n, value document, value i) {
   TSNode *node = (TSNode*) n;
 
   TSNode child = ts_node_named_child(*node, Int_val(i));
+  TSPoint ending = ts_node_end_point(child);
 
   TSNode* proxy = malloc(sizeof(TSNode));
-  proxy->data = child.data;
-  memcpy(proxy->offset, child.offset, 2);
+  *proxy = child;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -301,7 +294,7 @@ CAMLprim value caml_ts_node_named_child(value n, value document, value i) {
   uint32_t endByte = ts_node_end_byte(child);
 
   TSPoint startPoint = ts_node_start_point(child);
-  TSPoint endPoint = ts_node_start_point(child);
+  TSPoint endPoint = ts_node_end_point(child);
 
   Store_field(startPointCaml, 0, Val_int(startPoint.row));
   Store_field(startPointCaml, 1, Val_int(startPoint.column));
@@ -327,8 +320,7 @@ CAMLprim value caml_ts_node_next_sibling(value n, value document) {
   TSNode result = ts_node_next_sibling(*node);
 
   TSNode* proxy = malloc(sizeof(TSNode));
-  proxy->data = result.data;
-  memcpy(proxy->offset, result.offset, 2);
+  *proxy = result;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -342,7 +334,7 @@ CAMLprim value caml_ts_node_next_sibling(value n, value document) {
   uint32_t endByte = ts_node_end_byte(result);
 
   TSPoint startPoint = ts_node_start_point(result);
-  TSPoint endPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_end_point(result);
 
   Store_field(startPointCaml, 0, Val_int(startPoint.row));
   Store_field(startPointCaml, 1, Val_int(startPoint.column));
@@ -368,8 +360,7 @@ CAMLprim value caml_ts_node_next_named_sibling(value n, value document) {
   TSNode result = ts_node_next_named_sibling(*node);
 
   TSNode* proxy = malloc(sizeof(TSNode));
-  proxy->data = result.data;
-  memcpy(proxy->offset, result.offset, 2);
+  *proxy = result;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -383,7 +374,7 @@ CAMLprim value caml_ts_node_next_named_sibling(value n, value document) {
   uint32_t endByte = ts_node_end_byte(result);
 
   TSPoint startPoint = ts_node_start_point(result);
-  TSPoint endPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_end_point(result);
 
   Store_field(startPointCaml, 0, Val_int(startPoint.row));
   Store_field(startPointCaml, 1, Val_int(startPoint.column));
@@ -409,8 +400,7 @@ CAMLprim value caml_ts_node_prev_named_sibling(value n, value document) {
   TSNode result = ts_node_prev_named_sibling(*node);
 
   TSNode* proxy = malloc(sizeof(TSNode));
-  proxy->data = result.data;
-  memcpy(proxy->offset, result.offset, 2);
+  *proxy = result;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -424,7 +414,7 @@ CAMLprim value caml_ts_node_prev_named_sibling(value n, value document) {
   uint32_t endByte = ts_node_end_byte(result);
 
   TSPoint startPoint = ts_node_start_point(result);
-  TSPoint endPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_end_point(result);
 
   Store_field(startPointCaml, 0, Val_int(startPoint.row));
   Store_field(startPointCaml, 1, Val_int(startPoint.column));
@@ -450,8 +440,7 @@ CAMLprim value caml_ts_node_prev_sibling(value n, value document) {
   TSNode result = ts_node_prev_sibling(*node);
 
   TSNode* proxy = malloc(sizeof(TSNode));
-  proxy->data = result.data;
-  memcpy(proxy->offset, result.offset, 2);
+  *proxy = result;
 
   CAMLlocal4(astNode, typString, startPointCaml, endPointCaml);
 
@@ -465,7 +454,7 @@ CAMLprim value caml_ts_node_prev_sibling(value n, value document) {
   uint32_t endByte = ts_node_end_byte(result);
 
   TSPoint startPoint = ts_node_start_point(result);
-  TSPoint endPoint = ts_node_start_point(result);
+  TSPoint endPoint = ts_node_end_point(result);
 
   Store_field(startPointCaml, 0, Val_int(startPoint.row));
   Store_field(startPointCaml, 1, Val_int(startPoint.column));

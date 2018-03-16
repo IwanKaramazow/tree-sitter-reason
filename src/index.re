@@ -19,21 +19,23 @@ let () = {
   print_newline();
   print_int(rootNode.endByte);
   print_newline();
-  print_endline(TreeSitter.Node.toString(rootNode));
-  print_newline();
-  print_newline();
-  print_int(childCount(rootNode));
-  print_newline();
-  print_int(namedChildCount(rootNode));
-  print_newline();
-  print_endline(string_of_bool(TreeSitter.Node.equals(rootNode, rootNode)));
-  print_endline(string_of_bool(rootNode.type_ == "program"));
-  print_endline(rootNode.type_);
+  /* print_endline(TreeSitter.Node.toString(rootNode)); */
   print_endline(TreeSitter.Point.toString(rootNode.startPoint));
   print_endline(TreeSitter.Point.toString(rootNode.endPoint));
-  print_newline();
+  /* print_newline(); */
+  /* print_newline(); */
+  /* print_int(childCount(rootNode)); */
+  /* print_newline(); */
+  /* print_int(namedChildCount(rootNode)); */
+  /* print_newline(); */
+  /* print_endline(string_of_bool(TreeSitter.Node.equals(rootNode, rootNode))); */
+  /* print_endline(string_of_bool(rootNode.type_ == "program")); */
+  /* print_endline(rootNode.type_); */
+  /* print_endline(TreeSitter.Point.toString(rootNode.startPoint)); */
+  /* print_endline(TreeSitter.Point.toString(rootNode.endPoint)); */
+  /* print_newline(); */
   let valueBinding = TreeSitter.Node.child(rootNode, 1);
   print_endline(TreeSitter.Point.toString(valueBinding.startPoint));
   print_endline(TreeSitter.Point.toString(valueBinding.endPoint));
-  TreeSitter.Document.free(doc);
+  /* TreeSitter.Document.free(doc); */
 };
